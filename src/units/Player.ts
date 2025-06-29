@@ -41,33 +41,34 @@ export class Player extends Entity {
       TILE_SIZE
     );
     ctx.fillStyle = "#fff";
+    const faceSize = Math.floor(TILE_SIZE / 8);
     if (this.facing === "up")
       ctx.fillRect(
-        offsetX + this.x * TILE_SIZE + 6,
-        offsetY + this.y * TILE_SIZE + 2,
-        4,
-        4
+        offsetX + this.x * TILE_SIZE + TILE_SIZE / 2 - faceSize / 2,
+        offsetY + this.y * TILE_SIZE + TILE_SIZE / 8,
+        faceSize,
+        faceSize
       );
     if (this.facing === "down")
       ctx.fillRect(
-        offsetX + this.x * TILE_SIZE + 6,
-        offsetY + this.y * TILE_SIZE + 10,
-        4,
-        4
+        offsetX + this.x * TILE_SIZE + TILE_SIZE / 2 - faceSize / 2,
+        offsetY + this.y * TILE_SIZE + TILE_SIZE * 0.75 - faceSize / 2,
+        faceSize,
+        faceSize
       );
     if (this.facing === "left")
       ctx.fillRect(
-        offsetX + this.x * TILE_SIZE + 2,
-        offsetY + this.y * TILE_SIZE + 6,
-        4,
-        4
+        offsetX + this.x * TILE_SIZE + TILE_SIZE / 8,
+        offsetY + this.y * TILE_SIZE + TILE_SIZE / 2 - faceSize / 2,
+        faceSize,
+        faceSize
       );
     if (this.facing === "right")
       ctx.fillRect(
-        offsetX + this.x * TILE_SIZE + 10,
-        offsetY + this.y * TILE_SIZE + 6,
-        4,
-        4
+        offsetX + this.x * TILE_SIZE + TILE_SIZE * 0.75 - faceSize / 2,
+        offsetY + this.y * TILE_SIZE + TILE_SIZE / 2 - faceSize / 2,
+        faceSize,
+        faceSize
       );
   }
 }

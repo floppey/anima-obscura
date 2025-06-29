@@ -16,7 +16,7 @@ export interface TileDef {
   color: string; // Simple color for now
 }
 
-export const TILE_SIZE = 16;
+export const TILE_SIZE = 32;
 
 export const tileset: Record<TileType, TileDef> = {
   [TileType.Grass]: { type: TileType.Grass, solid: false, color: "#7ec850" },

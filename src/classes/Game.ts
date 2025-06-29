@@ -15,8 +15,8 @@ export class Game {
   constructor(canvas?: HTMLCanvasElement) {
     this.canvas =
       canvas || (document.getElementById("canvas") as HTMLCanvasElement);
-    this.canvas.width = 480;
-    this.canvas.height = 480;
+    this.canvas.width = TILE_SIZE * 15;
+    this.canvas.height = TILE_SIZE * 15;
     const ctx = this.canvas.getContext("2d");
     if (!ctx) throw new Error("2d context not supported");
     this.ctx = ctx;
