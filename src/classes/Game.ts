@@ -1,108 +1,101 @@
-import { MouseHandler } from "../input/MouseHandler";
-import { ImageName, imageNames } from "../constants/images";
-import { Unit } from "./Unit";
-import { DemoSkeleton } from "../units/DemoSkeleton";
 import { KeyboardHandler } from "../input/KeyboardHandler";
 import { Player } from "../units/Player";
+import { renderMap } from "../maps/MapRenderer";
+import { sampleMap } from "../maps/sampleMap";
+import { TILE_SIZE, TileType, tileset } from "../tiles/tileset";
 
 export class Game {
   canvas: HTMLCanvasElement;
   ctx: CanvasRenderingContext2D;
-  mouseHandler: MouseHandler;
   keyboardHandler: KeyboardHandler;
-  /* @ts-expect-error Images will be loaded in the constructor */
-  images: Record<ImageName, HTMLImageElement> = {};
-  lastUpdate = Date.now();
+  player: Player;
   paused = false;
-  units: Unit[] = [];
-  player: Player | null = null;
+  encounterCooldown = 0;
 
-  constructor() {
-    const c = document.querySelector("#canvas") as HTMLCanvasElement;
-    if (!c) {
-      throw new Error('No canvas element with id "canvas" found');
-    }
-    this.canvas = c;
+  constructor(canvas?: HTMLCanvasElement) {
+    this.canvas = canvas || document.createElement("canvas");
+    this.canvas.width = 480;
+    this.canvas.height = 480;
+    if (!canvas) document.body.appendChild(this.canvas);
     const ctx = this.canvas.getContext("2d");
-    if (!ctx) {
-      throw new Error("2d context not supported");
-    }
-
+    if (!ctx) throw new Error("2d context not supported");
     this.ctx = ctx;
-
-    // Set canvas size
-    this.canvas.width = 1024; // Default width, can be adjusted
-    this.canvas.height = 1024; // Default height, can be adjusted
-
-    this.mouseHandler = new MouseHandler(this);
-    this.mouseHandler.init();
     this.keyboardHandler = new KeyboardHandler(this);
     this.keyboardHandler.init();
-    this.loadImages();
-    this.units.push(new DemoSkeleton(this));
-    this.player = new Player(this);
+    this.player = new Player(20, 20);
+    this.setupInput();
   }
 
-  loadImages() {
-    imageNames.forEach((name) => {
-      const img = new Image();
-      img.src = `./assets/${name}.png`;
-      this.images[name] = img;
+  setupInput() {
+    window.addEventListener("keydown", (e) => {
+      let moved = false;
+      if (e.key === "ArrowUp") {
+        this.player.facing = "up";
+        this.player.tryMove(0, -1, sampleMap);
+        moved = true;
+      } else if (e.key === "ArrowDown") {
+        this.player.facing = "down";
+        this.player.tryMove(0, 1, sampleMap);
+        moved = true;
+      } else if (e.key === "ArrowLeft") {
+        this.player.facing = "left";
+        this.player.tryMove(-1, 0, sampleMap);
+        moved = true;
+      } else if (e.key === "ArrowRight") {
+        this.player.facing = "right";
+        this.player.tryMove(1, 0, sampleMap);
+        moved = true;
+      }
+      if (moved) {
+        this.update();
+        this.render();
+      }
     });
+  }
+
+  clamp(val: number, min: number, max: number) {
+    return Math.max(min, Math.min(max, val));
   }
 
   update() {
     if (this.paused) return;
-
-    const now = Date.now();
-    const deltaTime = now - this.lastUpdate;
-
-    // Update game logic here, e.g., moving objects, checking collisions, etc.
-    // This is where you would handle game state updates.
-
-    this.units.forEach((unit) => {
-      unit.update();
-    });
-
-    this.player?.update();
-
-    this.lastUpdate = now;
+    if (this.encounterCooldown > 0) this.encounterCooldown--;
+    // Wild encounter logic
+    const tile = sampleMap.data[this.player.y][this.player.x];
+    if (
+      tile === TileType.TallGrass &&
+      Math.random() < (tileset[tile].encounterChance || 0) &&
+      this.encounterCooldown === 0
+    ) {
+      this.encounterCooldown = 60; // Set cooldown BEFORE alert
+      alert("A wild monster appeared! (placeholder)");
+    }
+    this.player.update();
   }
 
   render() {
-    // Clear the canvas
-    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-
-    this.ctx.save();
-    this.ctx.fillStyle = "#c0c0c0";
-    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-
-    this.ctx.fillStyle = "#000";
-    this.ctx.font = "20px Arial";
-    this.ctx.textAlign = "center";
-    this.ctx.fillText(
-      `Game is ${this.paused ? "Paused" : "Running"}`,
-      this.canvas.width / 2,
-      this.canvas.height / 2 - 50
+    const VIEWPORT_WIDTH = Math.floor(this.canvas.width / TILE_SIZE);
+    const VIEWPORT_HEIGHT = Math.floor(this.canvas.height / TILE_SIZE);
+    const camX = this.clamp(
+      this.player.x - Math.floor(VIEWPORT_WIDTH / 2),
+      0,
+      sampleMap.width - VIEWPORT_WIDTH
     );
-    this.ctx.fillText(
-      new Date(this.lastUpdate).toLocaleTimeString("nb-NO", {
-        hour12: false,
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-      }),
-      this.canvas.width / 2,
-      this.canvas.height / 2
+    const camY = this.clamp(
+      this.player.y - Math.floor(VIEWPORT_HEIGHT / 2),
+      0,
+      sampleMap.height - VIEWPORT_HEIGHT
     );
+    renderMap(this.ctx, sampleMap, -camX * TILE_SIZE, -camY * TILE_SIZE);
+    this.player.render(this.ctx, -camX * TILE_SIZE, -camY * TILE_SIZE);
+  }
 
-    // Draw game elements here
-    this.units.forEach((unit) => {
-      unit.render();
-    });
-
-    this.player?.render();
-
-    this.ctx.restore();
+  start() {
+    const loop = () => {
+      this.update();
+      this.render();
+      requestAnimationFrame(loop);
+    };
+    loop();
   }
 }

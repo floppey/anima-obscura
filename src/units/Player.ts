@@ -1,80 +1,73 @@
-import { Game } from "../classes/Game";
-import { Unit } from "../classes/Unit";
-import { renderSprite } from "../renderHelpers/renderSprite";
+import { Entity } from "../classes/Entity";
+import { TILE_SIZE, tileset, TileType } from "../tiles/tileset";
 
-export class Player extends Unit {
-  direction: "left" | "right" | "none" = "none";
-  constructor(game: Game) {
-    const size = 64;
-    super({
-      game,
-      coordinates: {
-        x: game.canvas.width / 4 - size / 2,
-        y: game.canvas.height - size,
-      },
-      width: size,
-      height: size,
-    });
+export class Player extends Entity {
+  x: number;
+  y: number;
+  facing: "up" | "down" | "left" | "right" = "down";
+
+  constructor(x: number, y: number) {
+    super();
+    this.x = x;
+    this.y = y;
   }
 
-  jump() {
-    this.speedY = -10;
+  tryMove(
+    dx: number,
+    dy: number,
+    map: { data: TileType[][]; width: number; height: number }
+  ) {
+    const nx = this.x + dx;
+    const ny = this.y + dy;
+    if (nx < 0 || ny < 0 || nx >= map.width || ny >= map.height) return;
+    const tile = map.data[ny]?.[nx];
+    if (tile === undefined) return;
+    if (!tileset[tile].solid) {
+      this.x = nx;
+      this.y = ny;
+    }
   }
 
   update() {
-    // D is pressed and A is not pressed
-    if (
-      this.game.keyboardHandler.pressedKeys["D"] &&
-      !this.game.keyboardHandler.pressedKeys["A"]
-    ) {
-      this.direction = "right";
-    }
-    // A is pressed and D is not pressed
-    else if (
-      this.game.keyboardHandler.pressedKeys["A"] &&
-      !this.game.keyboardHandler.pressedKeys["D"]
-    ) {
-      this.direction = "left";
-    } else {
-      this.direction = "none";
-    }
-
-    if (this.direction === "right") {
-      this.coordinates.x += this.speedX;
-    }
-
-    if (this.direction === "left") {
-      this.coordinates.x -= this.speedX;
-    }
-
-    super.update();
+    // Placeholder for future logic (e.g., animation, status)
   }
 
-  render() {
-    super.render();
-    let row = 5;
-    let numberOfFrames = 4;
-    let mirrorX = false;
-    if (this.direction === "right") {
-      row = 7;
-      numberOfFrames = 5;
-    } else if (this.direction === "left") {
-      row = 7;
-      numberOfFrames = 5;
-      mirrorX = true;
-    }
-
-    renderSprite({
-      unit: this,
-      ctx: this.game.ctx,
-      sprite: this.game.images["monsters/OrcWarrior"],
-      spriteUnitWidth: 128,
-      spriteUnitHeight: 128,
-      numberOfFrames,
-      row,
-      loopDuration: 100,
-      mirrorX,
-    });
-    // Additional rendering logic for Player can be added here
+  render(ctx: CanvasRenderingContext2D, offsetX = 0, offsetY = 0) {
+    ctx.fillStyle = "#2222ff";
+    ctx.fillRect(
+      offsetX + this.x * TILE_SIZE,
+      offsetY + this.y * TILE_SIZE,
+      TILE_SIZE,
+      TILE_SIZE
+    );
+    ctx.fillStyle = "#fff";
+    if (this.facing === "up")
+      ctx.fillRect(
+        offsetX + this.x * TILE_SIZE + 6,
+        offsetY + this.y * TILE_SIZE + 2,
+        4,
+        4
+      );
+    if (this.facing === "down")
+      ctx.fillRect(
+        offsetX + this.x * TILE_SIZE + 6,
+        offsetY + this.y * TILE_SIZE + 10,
+        4,
+        4
+      );
+    if (this.facing === "left")
+      ctx.fillRect(
+        offsetX + this.x * TILE_SIZE + 2,
+        offsetY + this.y * TILE_SIZE + 6,
+        4,
+        4
+      );
+    if (this.facing === "right")
+      ctx.fillRect(
+        offsetX + this.x * TILE_SIZE + 10,
+        offsetY + this.y * TILE_SIZE + 6,
+        4,
+        4
+      );
   }
 }
