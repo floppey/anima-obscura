@@ -13,10 +13,10 @@ export class Game {
   encounterCooldown = 0;
 
   constructor(canvas?: HTMLCanvasElement) {
-    this.canvas = canvas || document.createElement("canvas");
+    this.canvas =
+      canvas || (document.getElementById("canvas") as HTMLCanvasElement);
     this.canvas.width = 480;
     this.canvas.height = 480;
-    if (!canvas) document.body.appendChild(this.canvas);
     const ctx = this.canvas.getContext("2d");
     if (!ctx) throw new Error("2d context not supported");
     this.ctx = ctx;
