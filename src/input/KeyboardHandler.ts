@@ -1,4 +1,5 @@
 import { Game } from "../classes/Game";
+import { sampleMap } from "../maps/sampleMap";
 
 interface EventListeners {
   keydown: (e: KeyboardEvent) => void;
@@ -47,8 +48,24 @@ export class KeyboardHandler {
       return;
     }
 
-    if (e.key === " ") {
-      this.#game.player?.jump();
+    let moved = false;
+    const map = this.#game.currentMap;
+    if (e.key === "ArrowUp") {
+      this.#game.player.facing = "up";
+      this.#game.player.tryMove(0, -1, map);
+      moved = true;
+    } else if (e.key === "ArrowDown") {
+      this.#game.player.facing = "down";
+      this.#game.player.tryMove(0, 1, map);
+      moved = true;
+    } else if (e.key === "ArrowLeft") {
+      this.#game.player.facing = "left";
+      this.#game.player.tryMove(-1, 0, map);
+      moved = true;
+    } else if (e.key === "ArrowRight") {
+      this.#game.player.facing = "right";
+      this.#game.player.tryMove(1, 0, map);
+      moved = true;
     }
 
     if (e.key === "Escape") {
@@ -57,6 +74,11 @@ export class KeyboardHandler {
     }
 
     this.#pressedKeys[e.key.toUpperCase()] = true;
+
+    if (moved) {
+      this.#game.update();
+      this.#game.render();
+    }
   };
 
   private ignoreInput(e: KeyboardEvent) {
