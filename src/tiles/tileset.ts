@@ -5,7 +5,8 @@ export enum TileType {
   Water,
   Tree,
   Path,
-  Wall
+  Wall,
+  Fence, // New tile type
 }
 
 export interface TileDef {
@@ -18,10 +19,16 @@ export interface TileDef {
 export const TILE_SIZE = 16;
 
 export const tileset: Record<TileType, TileDef> = {
-  [TileType.Grass]: { type: TileType.Grass, solid: false, color: '#7ec850' },
-  [TileType.TallGrass]: { type: TileType.TallGrass, solid: false, color: '#4fa64b', encounterChance: 0.1 },
-  [TileType.Water]: { type: TileType.Water, solid: true, color: '#3a6ea5' },
-  [TileType.Tree]: { type: TileType.Tree, solid: true, color: '#2e5d34' },
-  [TileType.Path]: { type: TileType.Path, solid: false, color: '#e2c290' },
-  [TileType.Wall]: { type: TileType.Wall, solid: true, color: '#888888' },
+  [TileType.Grass]: { type: TileType.Grass, solid: false, color: "#7ec850" },
+  [TileType.TallGrass]: {
+    type: TileType.TallGrass,
+    solid: false,
+    color: "#4fa64b",
+    encounterChance: 0.1,
+  },
+  [TileType.Water]: { type: TileType.Water, solid: true, color: "#3a6ea5" },
+  [TileType.Tree]: { type: TileType.Tree, solid: true, color: "#2e5d34" },
+  [TileType.Path]: { type: TileType.Path, solid: false, color: "#e2c290" },
+  [TileType.Wall]: { type: TileType.Wall, solid: true, color: "#888888" },
+  [TileType.Fence]: { type: TileType.Fence, solid: true, color: "#c2a060" }, // Fence tile
 };
