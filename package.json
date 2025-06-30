@@ -3,10 +3,14 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.ts",
+  "homepage": "https://anima-obscura.nat20.no",
   "scripts": {
     "dev": "vite",
     "build": "vite build && tsc --noEmit",
     "serve": "vite preview",
+    "add-domain": "echo anima-obscura.nat20.no > dist/CNAME",
+    "deploy": "npm run add-domain && gh-pages -d dist",
+    "bd": "npm run build && npm run deploy",
     "test": "jest",
     "test:watch": "jest --watch"
   },
