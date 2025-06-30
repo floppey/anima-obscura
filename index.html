@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Game Template</title>
+    <link rel="preload" as="image" href="/assets/monsters/OrcWarrior.png" />
+    <link rel="preload" as="image" href="/assets/monsters/Skeleton.png" />
+    <script type="module" crossorigin src="/assets/index-DAQeX2J9.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-BYwH_e7X.css">
+  </head>
+  <body>
+    <div id="game-container">
+      <div id="gameboy-frame">
+        <canvas id="canvas"></canvas>
+        <!-- Optional: Add Game Boy buttons and speaker dots here for extra effect -->
+
+        <div id="ui-container">
+          Add your UI elements here
+          <button type="button" onclick="javascript:window.game.paused = true">
+            Pause
+          </button>
+          <button type="button" onclick="javascript:window.game.paused = false">
+            Resume
+          </button>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
