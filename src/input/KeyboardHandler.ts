@@ -44,7 +44,7 @@ export class KeyboardHandler {
   }
 
   private keyDownHandler = (e: KeyboardEvent) => {
-    if (this.ignoreInput(e) || this.#pressedKeys[e.key.toUpperCase()]) {
+    if (this.ignoreInput(e)) {
       return;
     }
 

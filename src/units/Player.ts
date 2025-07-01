@@ -5,6 +5,8 @@ export class Player extends Entity {
   x: number;
   y: number;
   facing: "up" | "down" | "left" | "right" = "down";
+  moveDelay: number = 50; // ms, minimum time between moves
+  lastMoveTime: number = 0;
 
   constructor(x: number, y: number) {
     super();
@@ -17,6 +19,8 @@ export class Player extends Entity {
     dy: number,
     map: { data: TileType[][]; width: number; height: number }
   ) {
+    const now = Date.now();
+    if (now - this.lastMoveTime < this.moveDelay) return;
     const nx = this.x + dx;
     const ny = this.y + dy;
     if (nx < 0 || ny < 0 || nx >= map.width || ny >= map.height) return;
@@ -25,6 +29,7 @@ export class Player extends Entity {
     if (!tileset[tile].solid) {
       this.x = nx;
       this.y = ny;
+      this.lastMoveTime = now;
     }
   }
 

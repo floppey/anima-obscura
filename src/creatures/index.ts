@@ -1,14 +1,16 @@
-import { Creature, CreatureType } from "../classes/Creature";
+import { CreatureType, CreatureTemplate } from "../classes/Creature";
 
 // 🌱 Verdling
-export const Verdling = new Creature({
+export const Verdling = new CreatureTemplate({
   name: "Verdling",
   weightRange: [5.5, 8],
   heightRange: [0.6, 1],
   types: [CreatureType.Grass],
-  defense: 12,
-  speed: 6,
-  attack: 8,
+  baseStats: {
+    attack: 10,
+    defense: 10,
+    speed: 8,
+  },
   activeAbilities: [
     {
       name: "Rot Lash",
@@ -36,14 +38,16 @@ export const Verdling = new Creature({
 });
 
 // 🔥 Cindren
-export const Cindren = new Creature({
+export const Cindren = new CreatureTemplate({
   name: "Cindren",
   weightRange: [12, 18],
   heightRange: [0.8, 1.2],
   types: [CreatureType.Fire],
-  defense: 8,
-  speed: 10,
-  attack: 12,
+  baseStats: {
+    attack: 12,
+    defense: 8,
+    speed: 10,
+  },
   activeAbilities: [
     {
       name: "Singe Bite",
@@ -71,14 +75,16 @@ export const Cindren = new Creature({
 });
 
 // 💧 Mirelit
-export const Mirelit = new Creature({
+export const Mirelit = new CreatureTemplate({
   name: "Mirelit",
   weightRange: [8, 12],
   heightRange: [0.5, 0.9],
   types: [CreatureType.Water, CreatureType.Ghost],
-  defense: 9,
-  speed: 9,
-  attack: 9,
+  baseStats: {
+    attack: 8,
+    defense: 12,
+    speed: 6,
+  },
   activeAbilities: [
     {
       name: "Drown Pulse",
@@ -100,6 +106,14 @@ export const Mirelit = new Creature({
     description:
       "When struck by a super-effective attack, Mirelit sheds and regains some health.",
     type: CreatureType.Water,
+    effect: (creature) => {
+      if (creature.health > creature.maxHealth * 0.5) {
+        return; // Only trigger if below 50% health
+      }
+      // Heal for 5% of max health
+      const healAmount = creature.maxHealth * 0.05;
+      creature.heal(healAmount);
+    },
   },
   lore: "Sailors whisper of lantern-lights under the swamp that lead to death. Mirelit is what watches from below.",
 });
